@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Email Sender";
+}
+<h2>@ViewData["Title"]</h2>
+@using (Html.BeginForm("EmailSender2", "Home"))
+{
+<div class="row">
+    <div class="col-md-6">
+        <section>
+            <h4>
+                Simple e-mail sender.
+            </h4>
+            <hr />
+            <div class="row">
+                <div class="col-md-6">
+                    <form method="post">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input name="email" class="form-control" ; style="width: 500px" />
+                        </div>
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <input name="subject" class="form-control" ; style="width: 500px" />
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea name="message" class="form-control" ; rows="10" ; style="width:500px"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-default">Send Message</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </section>
+    </div>
+</div>
+}
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

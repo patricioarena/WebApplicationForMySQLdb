@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplicationForMySQLdb", "WebApplicationForMySQLdb\WebApplicationForMySQLdb.csproj", "{CADB2C7C-0AF4-4A6C-9083-F999C57CA215}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{4D6D91EF-30E1-4601-B71E-9B91D527E204}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\NuGet.JPG = Documentation\NuGet.JPG
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppService", "CustomService\AppService.csproj", "{24418FFA-CE78-4B59-B777-7A102E6D5F07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CADB2C7C-0AF4-4A6C-9083-F999C57CA215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CADB2C7C-0AF4-4A6C-9083-F999C57CA215}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CADB2C7C-0AF4-4A6C-9083-F999C57CA215}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CADB2C7C-0AF4-4A6C-9083-F999C57CA215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24418FFA-CE78-4B59-B777-7A102E6D5F07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24418FFA-CE78-4B59-B777-7A102E6D5F07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24418FFA-CE78-4B59-B777-7A102E6D5F07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24418FFA-CE78-4B59-B777-7A102E6D5F07}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8D4AB43C-B88F-4812-B100-6118651C67CF}
+	EndGlobalSection
+EndGlobal
