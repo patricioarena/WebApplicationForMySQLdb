@@ -10,6 +10,8 @@ namespace WebApplicationForMySQLdb.Services
 {
     // This class is used by the application to send email for account confirmation and password reset.
     // For more details see https://go.microsoft.com/fwlink/?LinkID=532713
+    // Crear contraseñar para smtp de google
+    // https://accounts.google.com/IssuedAuthSubTokens?hide_authsub=1
     public class EmailSender : IEmailSender
     {
         private readonly IConfiguration _configuration;

@@ -30,19 +30,19 @@ namespace AppService.Class
             return myQ;
         }
 
-        public Queue GetRoles(Queue myQ) // Entrega solamente roles 
-        {
-            Queue otherQueue = new Queue();
-            myQ.ToArray().ToList().ForEach(v =>
-            {
-                if (myQ.Count != 1)
-                {
-                    var aRole = myQ.Dequeue();
-                    otherQueue.Enqueue(aRole);
-                    var aLog = myQ.Dequeue();
-                }
-            });
-            return otherQueue;
-        }
+        //public Queue GetRoles(Queue myQ) // Entrega solamente roles 
+        //{
+        //    Queue otherQueue = new Queue();
+        //    myQ.ToArray().ToList().ForEach(v =>
+        //    {
+        //        if (myQ.Count != 1)
+        //        {
+        //            var aRole = myQ.Dequeue();
+        //            otherQueue.Enqueue(aRole);
+        //            var aLog = myQ.Dequeue();
+        //        }
+        //    });
+        //    return otherQueue;
+        //}
     }
 }

@@ -6,6 +6,6 @@ namespace AppService.Interfaces
     public interface IAppServices
     {
         Queue ConfigToQueue(string str);
-        Queue GetRoles(Queue myQ);
+        //Queue GetRoles(Queue myQ);
     }
 }

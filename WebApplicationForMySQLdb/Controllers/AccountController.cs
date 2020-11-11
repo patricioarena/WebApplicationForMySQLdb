@@ -71,8 +71,13 @@ namespace WebApplicationForMySQLdb.Controllers
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+
                 if (result.Succeeded)
                 {
+                    var user = await _userManager.FindByNameAsync(model.UserName);
+                    var logInfo = new UserLoginInfo("localProvider", "localKeyProvider", "local");
+                    _userManager.AddLoginAsync(user, logInfo);
+
                     _logger.LogInformation("User logged in.");
                     return RedirectToLocal(returnUrl);
                 }
@@ -213,36 +218,34 @@ namespace WebApplicationForMySQLdb.Controllers
             return View();
         }
 
+
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
+        public IActionResult AccountCreateSucceeded()
         {
+            return View();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult RegisterDto(string returnUrl = null)
+        {
+            ViewBag.Roles = new List<SelectListItem>
+                    {
+                new SelectListItem {Text = "Administrador", Value = "Administrador"},
+                new SelectListItem {Text = "Empleado", Value = "Empleado"},
+                new SelectListItem {Text = "Cliente", Value = "Cliente"}
+            };
+
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> RegisterDto(RegisterViewDto model, string returnUrl = null)
         {
-            /*Terminar conteo de Clientes 
-             Mejor alternativa es escalable, solo se realizan cambios en appsetting 
-             para agregar roles y cantidades modificando DbInitializer para que levante 
-             los roles de appsetting;
-             */
-            String Config = _configuration["UserRoles:Roles"];
-            Queue myQ = _appServices.ConfigToQueue(Config);
-            var aCout = await _userManager.GetUsersInRoleAsync("Client");
-            var limit = myQ.ToArray()[myQ.Count - 2].ToString();
-            if (Int32.Parse(limit) != 0)
-            {
-                if (aCout.Count() == Int32.Parse(limit))
-                {
-                    return RedirectToAction("Index", "Home"); // Redireccionar a pagina de informacion 
-                }
-            }
-
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
@@ -262,34 +265,78 @@ namespace WebApplicationForMySQLdb.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
-
-                    while (myQ.Count != 1)
-                    {
-                        var aRole = myQ.Dequeue();
-                        var aLog = myQ.Dequeue();
-                        var allInRole = await _userManager.GetUsersInRoleAsync(aRole.ToString());
-                        if (aRole.Equals("Client") && Int32.Parse(aLog.ToString()) == 0)
-                        {
-                            await _userManager.AddToRoleAsync(user, aRole.ToString());
-                            break;
-                        }
-                        if (allInRole.Count() < Int32.Parse(aLog.ToString()))
-                        {
-                            await _userManager.AddToRoleAsync(user, aRole.ToString());
-                            break;
-                        }
-                    }
-
+                    await _userManager.AddToRoleAsync(user, model.Rol);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-                    //await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("User created a new account with password.");
-                    return RedirectToLocal(returnUrl);
+                    await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
+                    return RedirectToAction("AccountCreateSucceeded", "Account");
                 }
                 AddErrors(result);
             }
+            // If we got this far, something failed, redisplay form
+            return RedirectToAction("RegisterDto", "Account");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        /// <summary>
+        /// Registrar 1 administrador
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        {
+            String Config = _configuration["UserRoles:Roles"];
+            Queue myQ = _appServices.ConfigToQueue(Config);
+            var aCout = await _userManager.GetUsersInRoleAsync("Administrador");
+
+            if (aCout.Count() == 1)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else if (aCout.Count() == 0)
+            {
+
+                ViewData["ReturnUrl"] = returnUrl;
+                if (ModelState.IsValid)
+                {
+                    if (model.Email != model.EmailConfirmed)
+                    {
+                        return View(model);
+                    }
+                    #region
+                    /*
+                     Eliminar EmailConfimed = true y descomentar
+                     await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
+                     para activar la confirmacion de correo electronico mediante 
+                     el envio de email de confirmacion.
+                     */
+                    #endregion
+                    var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, EmailConfirmed = true };
+                    var result = await _userManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user, "Administrador");
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+                        await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return RedirectToAction("AccountCreateSucceeded", "Account");
+                    }
+                    AddErrors(result);
+                }
+            }
+
             // If we got this far, something failed, redisplay form
             return View(model);
         }

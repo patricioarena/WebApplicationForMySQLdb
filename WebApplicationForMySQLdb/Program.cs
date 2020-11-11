@@ -32,8 +32,7 @@ namespace WebApplicationForMySQLdb
             _configuration = builder.Build();
 
             var Config = _configuration["UserRoles:Roles"];
-            var myQ = _appServices.ConfigToQueue(Config);
-            var newQ = _appServices.GetRoles(myQ);
+            var roles = _appServices.ConfigToQueue(Config);
 
             using (var scope = host.Services.CreateScope())
             {
@@ -41,7 +40,7 @@ namespace WebApplicationForMySQLdb
                 try
                 {
                     var context = services.GetRequiredService<ApplicationDbContext>();
-                    DbInitializer.RolesNames = newQ;
+                    DbInitializer.RolesNames = roles;
                     DbInitializer.InitializeAsync(context, services).Wait();
                 }
                 catch (Exception ex)

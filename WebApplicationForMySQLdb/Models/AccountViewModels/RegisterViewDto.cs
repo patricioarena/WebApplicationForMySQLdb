@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WebApplicationForMySQLdb.Models.AccountViewModels
 {
-    public class RegisterViewModel
+    public class RegisterViewDto
     {
         [Required]
         [UserName]
@@ -36,5 +37,8 @@ namespace WebApplicationForMySQLdb.Models.AccountViewModels
         [Display(Name = "Confirmar contraseña")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+       
+        [Required]
+        public string Rol { get; set; }
     }
 }

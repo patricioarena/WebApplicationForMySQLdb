@@ -29,27 +29,27 @@ namespace WebApplicationForMySQLdb.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Admin" )]
+        [Authorize(Roles = "Administrador")]
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
             return View();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
             return View();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult EmailSender()
         {
             return View();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult EmailSender2(string email, string subject, string message)
         {
             _emailSender.SendEmailAsync(email,subject,message);
