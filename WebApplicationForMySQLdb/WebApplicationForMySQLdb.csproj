@@ -18,6 +18,20 @@
     <Compile Remove="Migrations\20201110174711_MyFirstMigration.Designer.cs" />
     <Compile Remove="Migrations\20201110175236_AuthDB.cs" />
     <Compile Remove="Migrations\20201110175236_AuthDB.Designer.cs" />
+    <Compile Remove="Migrations\20201110235051_AuthDB.cs" />
+    <Compile Remove="Migrations\20201110235051_AuthDB.Designer.cs" />
+    <Compile Remove="Migrations\20201111000108_AuthDB.cs" />
+    <Compile Remove="Migrations\20201111000108_AuthDB.Designer.cs" />
+    <Compile Remove="Migrations\20201111000528_AuthDB.cs" />
+    <Compile Remove="Migrations\20201111000528_AuthDB.Designer.cs" />
+    <Compile Remove="Migrations\20201111001437_AuthDB.cs" />
+    <Compile Remove="Migrations\20201111001437_AuthDB.Designer.cs" />
+    <Compile Remove="Migrations\20201111013532_Auth.cs" />
+    <Compile Remove="Migrations\20201111013532_Auth.Designer.cs" />
+    <Compile Remove="Migrations\20201111013948_Auth.cs" />
+    <Compile Remove="Migrations\20201111013948_Auth.Designer.cs" />
+    <Compile Remove="Migrations\20201111014822_AuthDB.cs" />
+    <Compile Remove="Migrations\20201111014822_AuthDB.Designer.cs" />
   </ItemGroup>
 
 
@@ -53,10 +67,6 @@
     <Content Update="Views\Home\EmailSender.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

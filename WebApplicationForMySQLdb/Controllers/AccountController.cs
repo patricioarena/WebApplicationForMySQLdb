@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WebApplicationForMySQLdb.Data;
+using WebApplicationForMySQLdb.Data.Auth;
 using WebApplicationForMySQLdb.Models;
 using WebApplicationForMySQLdb.Models.AccountViewModels;
 using WebApplicationForMySQLdb.Services;
@@ -23,6 +25,7 @@ namespace WebApplicationForMySQLdb.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
+        private readonly autentificacionContext _Context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IAppServices _appServices;
@@ -31,6 +34,7 @@ namespace WebApplicationForMySQLdb.Controllers
         private readonly ILogger _logger;
 
         public AccountController(
+            autentificacionContext context,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IAppServices appServices,
@@ -38,6 +42,7 @@ namespace WebApplicationForMySQLdb.Controllers
             IEmailSender emailSender,
             ILogger<AccountController> logger)
         {
+            _Context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _appServices = appServices;
@@ -75,10 +80,19 @@ namespace WebApplicationForMySQLdb.Controllers
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(model.UserName);
-                    var logInfo = new UserLoginInfo("localProvider", "localKeyProvider", "local");
-                    _userManager.AddLoginAsync(user, logInfo);
+                    var te = new AspNetUserLogHistory
+                    {
+                        IdAspNetUserLogHistory = Guid.NewGuid().ToString(),
+                        UserId = user.Id,
+                        Date = DateTime.Now,
+                        Time = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
+                        Action = $"Login {model.UserName}"
+                    };
 
-                    _logger.LogInformation("User logged in.");
+                    _Context.AspNetUserLogHistory.Add(te);
+                    _Context.SaveChanges();
+
+                    //_logger.LogInformation("User logged in.");
                     return RedirectToLocal(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -92,6 +106,19 @@ namespace WebApplicationForMySQLdb.Controllers
                 }
                 else
                 {
+                    var user = await _userManager.FindByNameAsync(model.UserName);
+                    var te = new AspNetUserLogHistory
+                    {
+                        IdAspNetUserLogHistory = Guid.NewGuid().ToString(),
+                        UserId = user.Id,
+                        Date = DateTime.Now,
+                        Time = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
+                        Action = $"Invalid login attempt. {model.UserName}"
+                    };
+
+                    _Context.AspNetUserLogHistory.Add(te);
+                    _Context.SaveChanges();
+
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return View(model);
                 }
@@ -326,11 +353,37 @@ namespace WebApplicationForMySQLdb.Controllers
                     var result = await _userManager.CreateAsync(user, model.Password);
                     if (result.Succeeded)
                     {
+                        var userdb = await _userManager.FindByNameAsync(model.UserName);
+                        var AspNetUserLogHistory = new AspNetUserLogHistory
+                        {
+                            IdAspNetUserLogHistory = Guid.NewGuid().ToString(),
+                            UserId = userdb.Id,
+                            Date = DateTime.Now,
+                            Time = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
+                            Action = $"Create account {model.UserName}"
+                        };
+
+                        _Context.AspNetUserLogHistory.Add(AspNetUserLogHistory);
+                        _Context.SaveChanges();
+
                         await _userManager.AddToRoleAsync(user, "Administrador");
+
+                        var te = new AspNetUserLogHistory
+                        {
+                            IdAspNetUserLogHistory = Guid.NewGuid().ToString(),
+                            UserId = userdb.Id,
+                            Date = DateTime.Now,
+                            Time = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
+                            Action = $"{model.UserName} to Administrador"
+                        };
+
+                        _Context.AspNetUserLogHistory.Add(te);
+                        _Context.SaveChanges();
+
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                         var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
                         await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        //await _signInManager.SignInAsync(user, isPersistent: false);
                         return RedirectToAction("AccountCreateSucceeded", "Account");
                     }
                     AddErrors(result);

@@ -13,6 +13,7 @@ using WebApplicationForMySQLdb.Models;
 using WebApplicationForMySQLdb.Services;
 using AppService.Interfaces;
 using AppService.Class;
+using WebApplicationForMySQLdb.Data.Auth;
 
 namespace WebApplicationForMySQLdb
 {
@@ -29,6 +30,9 @@ namespace WebApplicationForMySQLdb
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseMySql(Configuration.GetConnectionString("FirstConnection")));
+
+            services.AddDbContext<autentificacionContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("FirstConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
